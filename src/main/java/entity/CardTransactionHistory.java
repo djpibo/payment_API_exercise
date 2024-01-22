@@ -1,6 +1,7 @@
-package domain;
+package entity;
 
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -8,9 +9,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-@Data
-public class UserCardDTO {
-
+@Entity
+@Getter
+public class CardTransactionHistory {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
     private Long id;
     private String username;
     private String address;
