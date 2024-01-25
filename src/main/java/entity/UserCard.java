@@ -27,7 +27,7 @@ public class UserCard {
     private String cardNumber;
     @Column(nullable = false)
     private String expiry;
-    private String pwd_2digit;
+    private String pwd2digit;
     private String cvc;
 
     @CreatedDate

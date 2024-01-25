@@ -19,23 +19,23 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
-    private String merchant_uid;
+    private String merchantUid;
     @Column(nullable = false)
     private BigDecimal amount;
-    private BigDecimal tax_free;
-    private BigDecimal vat_amount;
-    private String customer_uid;
+    private BigDecimal taxFree;
+    private BigDecimal vatAmount;
+    private String customerUid;
     private String pg;
     private String name;
-    private String custom_data;
-    private String browser_ip;
-    private String notice_url;
-    private String secure_3d_charge_id;
-    private String secure_3d_token;
-    private String product_type;
-    private int card_quota;
-    private boolean use_card_point;
-    private boolean interest_free_by_merchant;
+    private String customData;
+    private String browserIp;
+    private String noticeUrl;
+    private String secure3dChargeId;
+    private String secure3dToken;
+    private String productType;
+    private int cardQuota;
+    private boolean useCardPoint;
+    private boolean interestFreeByMerchant;
 
     @CreatedDate
     private LocalDateTime createdDate;

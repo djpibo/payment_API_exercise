@@ -1,30 +1,58 @@
--- schema.sql
-CREATE TABLE Broths (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
-    IsVegan BOOLEAN NOT NULL
+DROP TABLE IF EXISTS USER;
+CREATE TABLE USER
+(
+    id                INTEGER NOT NULL,
+    phone_number      INTEGER NOT NULL,
+    birth             VARCHAR(50) NOT NULL,
+    buyer_name        VARCHAR(50) NOT NULL,
+    buyer_tel         VARCHAR(50) NOT NULL,
+    buyer_addr        VARCHAR(50) NOT NULL,
+    buyer_postcode    VARCHAR(50) NOT NULL,
+    created_date      TIMESTAMP,
+    lastModified_date TIMESTAMP,
+    created_by        VARCHAR(50),
+    lastModified_by   VARCHAR(50),
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE [dbo].[Noodles] (
-    [Id]      INT           IDENTITY (1, 1) NOT NULL,
-    [Name]    NVARCHAR (25) NOT NULL,
-    [BrothId] INT           NOT NULL,
-    CONSTRAINT [PK_Noodles] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Noodles_Broths_BrothId] FOREIGN KEY ([BrothId]) REFERENCES [dbo].[Broths] ([Id]) ON DELETE CASCADE
+DROP TABLE IF EXISTS USER_CARD;
+CREATE TABLE USER_CARD
+(
+    id                INTEGER NOT NULL,
+    card_number       VARCHAR(50) NOT NULL,
+    expiry            VARCHAR(50) NOT NULL,
+    pwd_2digit        VARCHAR(50) NOT NULL,
+    cvc               VARCHAR(50) NOT NULL,
+    created_date      TIMESTAMP,
+    lastModified_date TIMESTAMP,
+    created_by        VARCHAR(50),
+    lastModified_by   VARCHAR(50),
+    PRIMARY KEY (id)
 );
 
-GO
-CREATE NONCLUSTERED INDEX [IX_Noodles_BrothId]
-    ON [dbo].[Noodles]([BrothId] ASC);
-
-CREATE TABLE [dbo].[Garnishes] (
-    [Id]       INT           IDENTITY (1, 1) NOT NULL,
-    [Name]     NVARCHAR (25) NOT NULL,
-    [NoodleId] INT           NULL,
-    CONSTRAINT [PK_Garnishes] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Garnishes_Noodles_NoodleId] FOREIGN KEY ([NoodleId]) REFERENCES [dbo].[Noodles] ([Id])
+DROP TABLE IF EXISTS ORDER;
+CREATE TABLE ORDER
+(
+    id                       INTEGER NOT NULL,
+    merchant_uid             VARCHAR(50) NOT NULL,
+    amount                   DECIMAL NOT NULL,
+    tax_free                 DECIMAL NOT NULL,
+    vat_amount               DECIMAL NOT NULL,
+    customer_uid             VARCHAR(50) NOT NULL,
+    pg                       VARCHAR(50) NOT NULL,
+    name                     VARCHAR(50) NOT NULL,
+    custom_data              VARCHAR(50) NOT NULL,
+    browser_ip               VARCHAR(50) NOT NULL,
+    notice_url               VARCHAR(50) NOT NULL,
+    secure_3d_charge_id      VARCHAR(50) NOT NULL,
+    secure_3d_token          VARCHAR(50) NOT NULL,
+    product_type             VARCHAR(50) NOT NULL,
+    card_quota               VARCHAR(50) NOT NULL,
+    use_card_point           BOOLEAN NOT NULL,
+    interst_free_by_merchant BOOLEAN NOT NULL,
+    created_date             TIMESTAMP,
+    lastModified_date        TIMESTAMP,
+    created_by               VARCHAR(50),
+    lastModified_by          VARCHAR(50),
+    PRIMARY KEY (id)
 );
-
-GO
-CREATE NONCLUSTERED INDEX [IX_Garnishes_NoodleId]
-    ON [dbo].[Garnishes]([NoodleId] ASC);

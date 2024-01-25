@@ -3,6 +3,7 @@ package service;
 import dto.*;
 import entity.User;
 import entity.UserCard;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import repository.PaymentRepository;
@@ -26,6 +27,13 @@ public class PaymentService {
     public PaymentService(PortoneFeign portoneFeign, PaymentRepository paymentRepository){
         this.portoneFeign = portoneFeign;
         this.paymentRepository = paymentRepository;
+    }
+    public List<UserCard> findUserCard(PaymentRequestDTO paymentRequestDTO) {
+        User user = paymentRepository.findUserById(paymentRequestDTO.getUserId());
+        return paymentRepository.findUserCardByUserId(user.getId());
+    }
+    public User findUser(PaymentRequestDTO paymentRequestDTO) {
+        return paymentRepository.findUserById(paymentRequestDTO.getUserId());
     }
 
     public SubscribeResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
@@ -53,12 +61,17 @@ public class PaymentService {
      - 보유 카드가 존재하면 포트원으로 결제 요청 & 거래 내역 적재
      - 포트원으로 결제 요청후 응답
     */
-    public List<UserCard> findUserCard(PaymentRequestDTO paymentRequestDTO) {
-        User user = paymentRepository.findUserById(paymentRequestDTO.getUserId());
-        return paymentRepository.findUserCardByUserId(user.getId());
-    }
-    public User findUser(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.findUserById(paymentRequestDTO.getUserId());
+
+    public UserCard enrollUserCard(PaymentRequestDTO paymentRequestDTO) {
+        return paymentRepository.save(paymentRequestDTO);
     }
 
+    public List<UserCard> selectUserCardList(PaymentRequestDTO paymentRequestDTO) {
+        return paymentRepository.findUserCardById(paymentRequestDTO.getUserId());
+    }
+
+    public UserCard modifyUserCard(PaymentRequestDTO paymentRequestDTO) {
+        return paymentRepository.modifyByCardId(paymentRequestDTO.getCardId())
+                .orElseThrow(() -> new EntityNotFoundException("userCard not found with id: " + paymentRequestDTO.getCardId()));
+    }
 }

@@ -23,15 +23,15 @@ public class User {
     private List<UserCard> userCardList;
 
     @Column(nullable = false)
-    private Long phone_number;
+    private Long phoneNumber;
 
     @Column(nullable = false)
     private String birth;
-    private String buyer_name;
-    private String buyer_email;
-    private String buyer_tel;
-    private String buyer_addr;
-    private String buyer_postcode;
+    private String buyerName;
+    private String buyerEmail;
+    private String buyerTel;
+    private String buyerAddr;
+    private String buyerPostcode;
 
     @CreatedDate
     private LocalDateTime createdDate;

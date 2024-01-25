@@ -2,15 +2,16 @@ package controller;
 
 import common.exception.NoSuchElementFoundException;
 import dto.PaymentRequestDTO;
-import dto.PaymentResponseDTO;
 import dto.SubscribeResponseDTO;
-import lombok.RequiredArgsConstructor;
+import entity.UserCard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import service.PaymentService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/domain")
@@ -25,7 +26,22 @@ public class PaymentController {
   // 내부 시스템에서 플랫폼을 호출
   @GetMapping("/payment")
   public ResponseEntity<SubscribeResponseDTO> pay(@RequestBody PaymentRequestDTO paymentRequestDTO) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(paymentService.pay(paymentRequestDTO));
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.pay(paymentRequestDTO));
+  }
+
+  @GetMapping("/user/enroll")
+  public ResponseEntity<UserCard> enrollUserCard(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.enrollUserCard(paymentRequestDTO));
+  }
+
+  @GetMapping("/user/select")
+  public ResponseEntity<List<UserCard>> selectUserCardList(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.selectUserCardList(paymentRequestDTO));
+  }
+
+  @GetMapping("/user/modify")
+  public ResponseEntity<UserCard> modifyUserCard(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.modifyUserCard(paymentRequestDTO));
   }
 
   @ExceptionHandler(NoSuchElementFoundException.class)
