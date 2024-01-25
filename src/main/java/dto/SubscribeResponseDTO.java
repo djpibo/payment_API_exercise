@@ -1,5 +1,6 @@
 package dto;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -16,62 +17,62 @@ public class SubscribeResponseDTO {
     public class PaymentAnnotation{
 
         // required
-        private String imp_uid;
-        private String merchant_uid;
+        private String impUid;
+        private String merchantUid;
         private BigDecimal amount;
-        private BigDecimal cancel_amount;
+        private BigDecimal cancelAmount;
         private String currency;
         private String status;  // ready:미결제 paid:결제완료 cancelled:결제취소 failed:결제실패
 
         // optional
-        private String pay_method;
+        private String payMethod;
         private String channel;
-        private String pg_provider;
-        private String emb_pg_provider;
-        private String pg_tid;
-        private String pg_id;
+        private String pgProvider;
+        private String embPgProvider;
+        private String pgTid;
+        private String pgId;
         private String escrow;
-        private String apply_num;
-        private String bank_code;
-        private String bank_name;
-        private String card_code;
-        private String card_name;
-        private String card_number;
-        private int card_quota;
-        private int card_type;
-        private String vbank_code;
-        private String vbank_num;
-        private String vbank_name;
-        private String vbank_holder;
-        private int vbank_issued_at;
-        private int vbank_date;
+        private String applyNum;
+        private String bankCode;
+        private String bankName;
+        private String cardCode;
+        private String cardName;
+        private String cardNumber;
+        private int cardQuota;
+        private int cardType;
+        private String vbankCode;
+        private String vbankNum;
+        private String vbankName;
+        private String vbankHolder;
+        private int vbankIssuedAt;
+        private int vbankDate;
         private String name;
-        private String buyer_name;
-        private String buyer_email;
-        private String buyer_tel;
-        private String buyer_addr;
-        private String buyer_postcode;
-        private String custom_data;
-        private String user_agent;
-        private int started_at;
-        private int paid_at;
-        private int failed_at;
-        private int cancelled_at;
-        private String fail_reason;
-        private String cancel_reason;
-        private String receipt_url;
-        private boolean cash_receipt_issued;
-        private String customer_uid;
-        private String customer_uid_usage;
-        private PaymentCancelAnnotation[] cancel_history;
+        private String buyerName;
+        private String buyerEmail;
+        private String buyerTel;
+        private String buyerAddr;
+        private String buyerPostcode;
+        private String customData;
+        private String userAgent;
+        private int startedAt;
+        private int paidAt;
+        private int failedAt;
+        private int cancelledAt;
+        private String failReason;
+        private String cancelReason;
+        private String receiptUrl;
+        private boolean cashReceiptIssued;
+        private String customerUid;
+        private String customerUidUsage;
+        private PaymentCancelAnnotation[] cancelHistory;
     }
 
     @Data
     public class PaymentCancelAnnotation{
-        private String pg_tid;
+        private String pgTid;
         private BigDecimal amount;
-        private int cancelled_at;
+        private int cancelledAt;
         private String reason;
-        private String receipt_url;
+        private String receiptUrl;
     }
 }

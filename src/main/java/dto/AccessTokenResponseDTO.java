@@ -12,7 +12,7 @@ public class AccessTokenResponseDTO {
     @Data
     public class AuthAnnotation{
         private int now;
-        private String access_token;
-        private int expired_at;
+        private String accessToken;
+        private int expiredAt;
     }
 }

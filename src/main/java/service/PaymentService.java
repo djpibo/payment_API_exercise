@@ -18,11 +18,11 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Value("${portone.imp.key}")
-    private String imp_key;
+    private String impKey;
     @Value("${portone.imp.secret}")
-    private String imp_secret;
+    private String impSecret;
     @Value("${portone.imp.merchant_uid}")
-    private String merchant_uid;
+    private String merchantUid;
 
     public PaymentService(PortoneFeign portoneFeign, PaymentRepository paymentRepository){
         this.portoneFeign = portoneFeign;
@@ -39,22 +39,22 @@ public class PaymentService {
                 .expiry((userCard.getExpiry()))
                 .amount(paymentRequestDTO.getAmount())
                 .birth(user.getBirth())
-                .merchantUid(merchant_uid)
-                .token(accessTokenResponseDTO.getResponse().getAccess_token())
+                .merchantUid(merchantUid)
+                .token(accessTokenResponseDTO.getResponse().getAccessToken())
                 .build();
 
         SubscribeResponseDTO subscribeResponseDTO = portoneFeign.postSubscribePaymentOnetime(subscribeRequestDTO);
 
-        PaymentResponseDTO paymentResponseDTO = PaymentResponseDTO.builder(
-                subscribeResponseDTO.getCode(),
-                subscribeResponseDTO.getMessage(),
-                subscribeResponseDTO.getResponse()
-        ).build();
+        PaymentResponseDTO paymentResponseDTO = PaymentResponseDTO.builder()
+                .code(subscribeResponseDTO.getCode())
+                .message(subscribeResponseDTO.getMessage())
+                .response(subscribeResponseDTO.getResponse())
+                .build();
 
         return paymentResponseDTO;
     }
     public AccessTokenResponseDTO getAccessToken() {
-        return portoneFeign.postAccessToken(AccessTokenRequestDTO.of(imp_key, imp_secret));
+        return portoneFeign.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
     }
     /*
      - 보유 카드가 없으면 에러 응답
