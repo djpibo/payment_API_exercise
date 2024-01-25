@@ -21,6 +21,7 @@ public class PaymentController {
     this.paymentService = paymentService;
   }
 
+  // 내부 시스템에서 플랫폼을 호출
   @GetMapping("/payment")
   public ResponseEntity<PaymentResponseDTO> pay(@RequestBody PaymentRequestDTO paymentRequestDTO) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(paymentService.pay(paymentRequestDTO));

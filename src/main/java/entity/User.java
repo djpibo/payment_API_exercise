@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -18,11 +19,19 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "phone_number", nullable = false)
-    private Long phoneNum;
+    @OneToMany(mappedBy = "user")
+    private List<UserCard> userCardList;
 
-    private String username;
-    private String address;
+    @Column(nullable = false)
+    private Long phone_number;
+
+    @Column(nullable = false)
+    private String birth;
+    private String buyer_name;
+    private String buyer_email;
+    private String buyer_tel;
+    private String buyer_addr;
+    private String buyer_postcode;
 
     @CreatedDate
     private LocalDateTime createdDate;

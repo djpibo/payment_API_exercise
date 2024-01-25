@@ -1,8 +1,18 @@
+## h2 관련 설정
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
     username: sa
-    password: password
+    password: 1234
+  h2:
+    console:
+      enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+
+portone:
+  imp:
+    key: 3337650331048410
+    secret: 2zxrhCRhWQ02fTIra5q9jUkIKeot8rgj2H6K1ZOQh9FyJ5FOdsE8ZcJ6Wq8SQUy2ad8VzQrIWSq57JEg
+    merchant_uid: imp84787424

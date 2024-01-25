@@ -1,16 +1,24 @@
 package config;
 
 import feign.Logger;
+import feign.RequestInterceptor;
 import feign.codec.Decoder;
+import interceptor.FeignInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FeignConfig {
-    /** feign 로깅 처리*/
+
     @Bean
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
+    }
+
+    @Bean
+    public RequestInterceptor feignInterceptor() {
+        String token = "token";
+        return new FeignInterceptor(token);
     }
 
 }

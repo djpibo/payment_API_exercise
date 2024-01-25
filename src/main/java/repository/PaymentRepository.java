@@ -1,6 +1,8 @@
 package repository;
 
 import entity.CardTransactionHistory;
+import entity.User;
+import entity.UserCard;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +15,14 @@ public interface PaymentRepository extends JpaRepository<CardTransactionHistory,
     /* 쿼리 메소드의 주제 키워드 */
 
     // 조회
-    List<CardTransactionHistory> findByUserName(String UserName);
+    User findUserById(long id);
+
+    List<UserCard> findUserCardByUserId(long userId);
 
     /* @Query 사용하기 */
 
-    @Query("SELECT p FROM Product p WHERE p.price > 2000")
-    List<CardTransactionHistory> findByPriceBasis();
+    @Query("SELECT * FROM USER_CARD WHERE phone_number = ?")
+    List<CardTransactionHistory> findCardListsByPhoneNumber(String phone_number);
 
     @Query(value = "SELECT * FROM product p WHERE p.price > 2000", nativeQuery = true)
     List<CardTransactionHistory> findByPriceBasisNativeQuery();
@@ -36,4 +40,8 @@ public interface PaymentRepository extends JpaRepository<CardTransactionHistory,
     countQuery = "SELECT count(*) FROM product WHERE price > ?1",
     nativeQuery = true)
     List<CardTransactionHistory> findByPriceWithParameterPaging(Integer price, Pageable pageable);
+
+    UserCard findCardByCardId(Long cardId);
+
+    User findUserByUserId(long userId);
 }

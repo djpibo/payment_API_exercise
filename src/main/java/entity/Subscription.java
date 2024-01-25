@@ -1,34 +1,30 @@
 package entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-public class UserCard {
+public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(name = "card_number", nullable = false)
-    private String cardNumber;
+    @Id
     @Column(nullable = false)
-    private String expiry;
-    private String pwd_2digit;
-    private String cvc;
+    private Long user_id;
+
+    @Id
+    @Column(nullable = false)
+    private Long card_id;
 
     @CreatedDate
     private LocalDateTime createdDate;
