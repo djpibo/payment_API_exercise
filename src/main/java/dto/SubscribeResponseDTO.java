@@ -13,8 +13,7 @@ public class SubscribeResponseDTO {
     private PaymentAnnotation response;
 
     @Data
-    @RequiredArgsConstructor
-    public class PaymentAnnotation{
+    public static class PaymentAnnotation{
 
         // required
         private String impUid;
@@ -68,7 +67,7 @@ public class SubscribeResponseDTO {
     }
 
     @Data
-    public class PaymentCancelAnnotation{
+    public static class PaymentCancelAnnotation{
         private String pgTid;
         private BigDecimal amount;
         private int cancelledAt;

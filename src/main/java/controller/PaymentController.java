@@ -3,6 +3,7 @@ package controller;
 import common.exception.NoSuchElementFoundException;
 import dto.PaymentRequestDTO;
 import dto.PaymentResponseDTO;
+import dto.SubscribeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class PaymentController {
 
   // 내부 시스템에서 플랫폼을 호출
   @GetMapping("/payment")
-  public ResponseEntity<PaymentResponseDTO> pay(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+  public ResponseEntity<SubscribeResponseDTO> pay(@RequestBody PaymentRequestDTO paymentRequestDTO) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(paymentService.pay(paymentRequestDTO));
   }
 

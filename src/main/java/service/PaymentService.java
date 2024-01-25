@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import repository.PaymentRepository;
 import service.feign.PortoneFeign;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,7 +28,7 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public PaymentResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
+    public SubscribeResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
         AccessTokenResponseDTO accessTokenResponseDTO = getAccessToken();
         UserCard userCard = paymentRepository.findCardByCardId(paymentRequestDTO.getCardId());
         User user = paymentRepository.findUserByUserId(paymentRequestDTO.getUserId());
@@ -43,15 +42,8 @@ public class PaymentService {
                 .token(accessTokenResponseDTO.getResponse().getAccessToken())
                 .build();
 
-        SubscribeResponseDTO subscribeResponseDTO = portoneFeign.postSubscribePaymentOnetime(subscribeRequestDTO);
+        return portoneFeign.postSubscribePaymentOnetime(subscribeRequestDTO);
 
-        PaymentResponseDTO paymentResponseDTO = PaymentResponseDTO.builder()
-                .code(subscribeResponseDTO.getCode())
-                .message(subscribeResponseDTO.getMessage())
-                .response(subscribeResponseDTO.getResponse())
-                .build();
-
-        return paymentResponseDTO;
     }
     public AccessTokenResponseDTO getAccessToken() {
         return portoneFeign.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
