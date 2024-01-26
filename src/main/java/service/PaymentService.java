@@ -1,12 +1,16 @@
 package service;
 
 import dto.*;
-import entity.User;
+import entity.CardOrder;
+import entity.Member;
 import entity.UserCard;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import repository.PaymentRepository;
@@ -29,22 +33,22 @@ public class PaymentService {
     @Value("${portone.imp.merchant_uid}")
     private String merchantUid;
     public List<UserCard> findUserCard(PaymentRequestDTO paymentRequestDTO) {
-        User user = paymentRepository.findUserById(paymentRequestDTO.getUserId());
-        return paymentRepository.findUserCardByUserId(user.getId());
+        Member member = paymentRepository.findUserById(paymentRequestDTO.getUserId());
+        return paymentRepository.findUserCardByUserId(member.getId());
     }
-    public User findUser(PaymentRequestDTO paymentRequestDTO) {
+    public Member findUser(PaymentRequestDTO paymentRequestDTO) {
         return paymentRepository.findUserById(paymentRequestDTO.getUserId());
     }
 
     public SubscribeResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
         UserCard userCard = paymentRepository.findCardByCardId(paymentRequestDTO.getCardId());
-        User user = paymentRepository.findUserByUserId(paymentRequestDTO.getUserId());
+        Member member = paymentRepository.findUserByUserId(paymentRequestDTO.getUserId());
 
         SubscribeRequestDTO subscribeRequestDTO= SubscribeRequestDTO.builder()
                 .cardNumber(userCard.getCardNumber())
                 .expiry((userCard.getExpiry()))
                 .amount(paymentRequestDTO.getAmount())
-                .birth(user.getBirth())
+                .birth(member.getBirth())
                 .merchantUid(merchantUid)
                 .build();
         SubscribeResponseDTO subscribeResponseDTO
@@ -86,5 +90,10 @@ public class PaymentService {
     public UserCard modifyCardStatusUserCard(PaymentRequestDTO paymentRequestDTO) {
         return paymentRepository.modifyCardStatusByCardId(paymentRequestDTO.getCardStatus(), paymentRequestDTO.getCardId())
                 .orElseThrow(() -> new EntityNotFoundException("userCard not found with id: " + paymentRequestDTO.getCardId()));
+    }
+
+    public Page<CardOrder> selectOrderHistory(PaymentRequestDTO paymentRequestDTO, int page) {
+        return paymentRepository.selectOrderHistory(paymentRequestDTO.getUserId(), PageRequest.of(page, 10)
+                , PageRequest.of(0, 10, Sort.by("createdAt").ascending()));
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 @Slf4j
 public class TaskletJob {
-
+/*
     private final JobBuilder jobBuilder;
     private final StepBuilder stepBuilder;
     private final PlatformTransactionManager transactionManager;
@@ -69,5 +69,5 @@ public class TaskletJob {
             );
         };
     }
-
+*/
 }

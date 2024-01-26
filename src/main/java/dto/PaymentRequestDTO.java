@@ -10,11 +10,14 @@ import java.math.BigDecimal;
 public class PaymentRequestDTO {
     private long userId;
     private long cardId;
+    private long orderId;
     private String phoneNumber;
     private String userName;
     private String cardName;
     @Enumerated(EnumType.STRING)
     private String cardStatus;
+    @Enumerated(EnumType.STRING)
+    private String userStatus;
     private BigDecimal amount;
 }
 

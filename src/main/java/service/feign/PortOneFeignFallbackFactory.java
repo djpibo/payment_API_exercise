@@ -24,11 +24,11 @@ public class PortOneFeignFallbackFactory implements FallbackFactory<PortoneClien
             @Override
             public AccessTokenResponseDTO postAccessToken(AccessTokenRequestDTO accessTokenRequestDTO) {
                 log.info("error occurred, {}", cause.getMessage());
-                return new AccessTokenResponseDTO.Empty;
+                return null;
             }
             @Override
             public SubscribeResponseDTO postSubscribePaymentOnetime(String token, SubscribeRequestDTO subscribeDTO) {
-                return new SubscribeResponseDTO("fallback; reason was: " + cause.getMessage());
+                return null;
             }
             @Override
             public Hello iFailSometimes() {

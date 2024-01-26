@@ -12,19 +12,20 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-public class Order {
+public class CardOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(nullable = false)
+    private String customerUid; // 회원정보와 FK
+    @Column(nullable = false)
     private String merchantUid;
     @Column(nullable = false)
     private BigDecimal amount;
     private BigDecimal taxFree;
     private BigDecimal vatAmount;
-    private String customerUid;
     private String pg;
     private String name;
     private String customData;
