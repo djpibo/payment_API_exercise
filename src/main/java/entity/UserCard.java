@@ -11,7 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 @Entity
 public class UserCard {
     @Id
@@ -29,6 +29,8 @@ public class UserCard {
     private String expiry;
     private String pwd2digit;
     private String cvc;
+    @Enumerated(EnumType.STRING)
+    private String cardStatus;
 
     @CreatedDate
     private LocalDateTime createdDate;

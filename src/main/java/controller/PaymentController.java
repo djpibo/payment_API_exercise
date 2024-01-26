@@ -4,6 +4,7 @@ import common.exception.NoSuchElementFoundException;
 import dto.PaymentRequestDTO;
 import dto.SubscribeResponseDTO;
 import entity.UserCard;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/domain")
+@RequiredArgsConstructor
 public class PaymentController {
   @Autowired
   private final PaymentService paymentService;
-
-  public PaymentController(PaymentService paymentService){
-    this.paymentService = paymentService;
-  }
 
   // 내부 시스템에서 플랫폼을 호출
   @GetMapping("/payment")

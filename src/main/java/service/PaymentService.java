@@ -3,19 +3,24 @@ package service;
 import dto.*;
 import entity.User;
 import entity.UserCard;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import repository.PaymentRepository;
-import service.feign.PortoneFeign;
+import service.feign.PortoneClient;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
-    private final PortoneFeign portoneFeign;
-
+    private final PortoneClient portoneClient;
+    private final EntityManager entityManager;
     private final PaymentRepository paymentRepository;
+    private final RedisService redisService;
 
     @Value("${portone.imp.key}")
     private String impKey;
@@ -23,11 +28,6 @@ public class PaymentService {
     private String impSecret;
     @Value("${portone.imp.merchant_uid}")
     private String merchantUid;
-
-    public PaymentService(PortoneFeign portoneFeign, PaymentRepository paymentRepository){
-        this.portoneFeign = portoneFeign;
-        this.paymentRepository = paymentRepository;
-    }
     public List<UserCard> findUserCard(PaymentRequestDTO paymentRequestDTO) {
         User user = paymentRepository.findUserById(paymentRequestDTO.getUserId());
         return paymentRepository.findUserCardByUserId(user.getId());
@@ -37,7 +37,6 @@ public class PaymentService {
     }
 
     public SubscribeResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
-        AccessTokenResponseDTO accessTokenResponseDTO = getAccessToken();
         UserCard userCard = paymentRepository.findCardByCardId(paymentRequestDTO.getCardId());
         User user = paymentRepository.findUserByUserId(paymentRequestDTO.getUserId());
 
@@ -47,14 +46,21 @@ public class PaymentService {
                 .amount(paymentRequestDTO.getAmount())
                 .birth(user.getBirth())
                 .merchantUid(merchantUid)
-                .token(accessTokenResponseDTO.getResponse().getAccessToken())
                 .build();
+        SubscribeResponseDTO subscribeResponseDTO
+                = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), subscribeRequestDTO);
 
-        return portoneFeign.postSubscribePaymentOnetime(subscribeRequestDTO);
+        if(subscribeResponseDTO.getCode() == HttpStatus.UNAUTHORIZED.value()){
+            AccessTokenResponseDTO accessTokenResponseDTO = getAccessToken();
+            redisService.saveDataToRedis("Access-Token", accessTokenResponseDTO.getResponse().getAccessToken());
+            subscribeResponseDTO
+                    = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), subscribeRequestDTO);
+        }
+        return subscribeResponseDTO;
 
     }
     public AccessTokenResponseDTO getAccessToken() {
-        return portoneFeign.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
+        return portoneClient.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
     }
     /*
      - 보유 카드가 없으면 에러 응답
@@ -71,7 +77,14 @@ public class PaymentService {
     }
 
     public UserCard modifyUserCard(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.modifyByCardId(paymentRequestDTO.getCardId())
+        UserCard userCard = entityManager.find(UserCard.class, paymentRequestDTO.getCardId());
+        userCard.setCardNumber(paymentRequestDTO.getCardStatus());
+        userCard.setCardStatus(paymentRequestDTO.getCardStatus());
+        userCard.setPwd2digit(paymentRequestDTO.getCardStatus());
+        return userCard;
+    }
+    public UserCard modifyCardStatusUserCard(PaymentRequestDTO paymentRequestDTO) {
+        return paymentRepository.modifyCardStatusByCardId(paymentRequestDTO.getCardStatus(), paymentRequestDTO.getCardId())
                 .orElseThrow(() -> new EntityNotFoundException("userCard not found with id: " + paymentRequestDTO.getCardId()));
     }
 }
