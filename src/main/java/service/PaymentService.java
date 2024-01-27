@@ -90,6 +90,7 @@ public class PaymentService {
         userCard.setCardNumber(userRequestDTO.getCardStatus());
         userCard.setCardStatus(userRequestDTO.getCardStatus());
         userCard.setPwd2digit(userRequestDTO.getCardStatus());
+        entityManager.persist(userCard);
         return userCard;
     }
     // 카드 정보 수정(2)

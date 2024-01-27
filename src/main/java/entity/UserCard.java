@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -17,9 +18,9 @@ public class UserCard {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Member member;
+    @OneToMany
+    @JoinColumn(name = "order_id")
+    private CardOrder cardOrder;
 
     @Column(name = "card_number", nullable = false)
     private String cardNumber;

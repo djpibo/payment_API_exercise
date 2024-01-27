@@ -18,8 +18,9 @@ public class Member {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany(mappedBy = "member")
-    private List<UserCard> userCardList;
+    @OneToMany
+    @JoinColumn(name = "card_id")
+    private UserCard userCard;
 
     @Column(nullable = false)
     private String buyerTel;
