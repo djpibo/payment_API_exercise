@@ -2,14 +2,13 @@ package dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class SubscribeResponseDTO {
+public class PortonePayResponseDTO {
     private int code;
     private String message;
     private PaymentAnnotation response;

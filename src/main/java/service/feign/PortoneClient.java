@@ -3,8 +3,8 @@ package service.feign;
 import config.FeignConfig;
 import dto.AccessTokenRequestDTO;
 import dto.AccessTokenResponseDTO;
-import dto.SubscribeRequestDTO;
-import dto.SubscribeResponseDTO;
+import dto.PortonePayRequestDTO;
+import dto.PortonePayResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ public interface PortoneClient {
     @RequestMapping(method = RequestMethod.POST, value = "/users/getToken")
     AccessTokenResponseDTO postAccessToken(@RequestParam AccessTokenRequestDTO accessTokenRequestDTO);
     @RequestMapping(method = RequestMethod.POST, value = "/subscribe/payments/onetime")
-    SubscribeResponseDTO postSubscribePaymentOnetime(@RequestHeader("Authorization") String token, @RequestParam SubscribeRequestDTO subscribeDTO);
+    PortonePayResponseDTO postSubscribePaymentOnetime(@RequestHeader("Authorization") String token, @RequestParam PortonePayRequestDTO subscribeDTO);
 
     Hello iFailSometimes();
 }

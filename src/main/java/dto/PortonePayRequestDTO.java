@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class SubscribeRequestDTO {
+public class PortonePayRequestDTO {
 
     // required
     private BigDecimal amount;

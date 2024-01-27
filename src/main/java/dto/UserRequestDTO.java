@@ -7,7 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class PaymentRequestDTO {
+public class UserRequestDTO {
     private long userId;
     private long cardId;
     private long orderId;

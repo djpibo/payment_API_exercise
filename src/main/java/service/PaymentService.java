@@ -13,7 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import repository.PaymentRepository;
+import repository.CardOrderRepository;
+import repository.MemberRepository;
+import repository.UserCardRepository;
 import service.feign.PortoneClient;
 
 import java.util.List;
@@ -23,7 +25,9 @@ import java.util.List;
 public class PaymentService {
     private final PortoneClient portoneClient;
     private final EntityManager entityManager;
-    private final PaymentRepository paymentRepository;
+    private final CardOrderRepository cardOrderRepository;
+    private final MemberRepository memberRepository;
+    private final UserCardRepository userCardRepository;
     private final RedisService redisService;
 
     @Value("${portone.imp.key}")
@@ -32,68 +36,71 @@ public class PaymentService {
     private String impSecret;
     @Value("${portone.imp.merchant_uid}")
     private String merchantUid;
-    public List<UserCard> findUserCard(PaymentRequestDTO paymentRequestDTO) {
-        Member member = paymentRepository.findUserById(paymentRequestDTO.getUserId());
-        return paymentRepository.findUserCardByUserId(member.getId());
-    }
-    public Member findUser(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.findUserById(paymentRequestDTO.getUserId());
+
+    // 회원정보조회
+    public Member findUser(UserRequestDTO userRequestDTO) {
+        return memberRepository.findUserById(userRequestDTO.getUserId());
     }
 
-    public SubscribeResponseDTO pay(PaymentRequestDTO paymentRequestDTO) {
-        UserCard userCard = paymentRepository.findCardByCardId(paymentRequestDTO.getCardId());
-        Member member = paymentRepository.findUserByUserId(paymentRequestDTO.getUserId());
-
-        SubscribeRequestDTO subscribeRequestDTO= SubscribeRequestDTO.builder()
-                .cardNumber(userCard.getCardNumber())
-                .expiry((userCard.getExpiry()))
-                .amount(paymentRequestDTO.getAmount())
-                .birth(member.getBirth())
-                .merchantUid(merchantUid)
-                .build();
-        SubscribeResponseDTO subscribeResponseDTO
-                = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), subscribeRequestDTO);
-
-        if(subscribeResponseDTO.getCode() == HttpStatus.UNAUTHORIZED.value()){
-            AccessTokenResponseDTO accessTokenResponseDTO = getAccessToken();
-            redisService.saveDataToRedis("Access-Token", accessTokenResponseDTO.getResponse().getAccessToken());
-            subscribeResponseDTO
-                    = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), subscribeRequestDTO);
-        }
-        return subscribeResponseDTO;
-
-    }
-    public AccessTokenResponseDTO getAccessToken() {
-        return portoneClient.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
-    }
     /*
      - 보유 카드가 없으면 에러 응답
      - 보유 카드가 존재하면 포트원으로 결제 요청 & 거래 내역 적재
      - 포트원으로 결제 요청후 응답
     */
+    public PortonePayResponseDTO pay(UserRequestDTO userRequestDTO) {
+        UserCard userCard = cardOrderRepository.findCardByCardId(userRequestDTO.getCardId());
+        Member member = cardOrderRepository.findUserByUserId(userRequestDTO.getUserId());
 
-    public UserCard enrollUserCard(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.save(paymentRequestDTO);
+        PortonePayRequestDTO portonePayRequestDTO = PortonePayRequestDTO.builder()
+                .cardNumber(userCard.getCardNumber())
+                .expiry((userCard.getExpiry()))
+                .amount(userRequestDTO.getAmount())
+                .birth(member.getBirth())
+                .merchantUid(merchantUid)
+                .build();
+        PortonePayResponseDTO portonePayResponseDTO
+                = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), portonePayRequestDTO);
+
+        if(portonePayResponseDTO.getCode() == HttpStatus.UNAUTHORIZED.value()){
+            AccessTokenResponseDTO accessTokenResponseDTO = getAccessToken();
+            redisService.saveDataToRedis("Access-Token", accessTokenResponseDTO.getResponse().getAccessToken());
+            portonePayResponseDTO
+                    = portoneClient.postSubscribePaymentOnetime("Bearer " + redisService.getDataFromRedis("Access-Token"), portonePayRequestDTO);
+        }
+        return portonePayResponseDTO;
+
+    }
+    public AccessTokenResponseDTO getAccessToken() {
+        return portoneClient.postAccessToken(AccessTokenRequestDTO.of(impKey, impSecret));
     }
 
-    public List<UserCard> selectUserCardList(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.findUserCardById(paymentRequestDTO.getUserId());
+    // 카드 정보 등록
+    public UserCard enrollUserCard(UserRequestDTO userRequestDTO) {
+        return userCardRepository.save(userRequestDTO);
     }
 
-    public UserCard modifyUserCard(PaymentRequestDTO paymentRequestDTO) {
-        UserCard userCard = entityManager.find(UserCard.class, paymentRequestDTO.getCardId());
-        userCard.setCardNumber(paymentRequestDTO.getCardStatus());
-        userCard.setCardStatus(paymentRequestDTO.getCardStatus());
-        userCard.setPwd2digit(paymentRequestDTO.getCardStatus());
+    // 회원 보유 카드 정보 조회
+    public List<UserCard> selectUserCardList(UserRequestDTO userRequestDTO) {
+        return userCardRepository.findUserCardById(userRequestDTO.getUserId());
+    }
+
+    // 카드 정보 수정(1)
+    public UserCard modifyUserCard(UserRequestDTO userRequestDTO) {
+        UserCard userCard = entityManager.find(UserCard.class, userRequestDTO.getCardId());
+        userCard.setCardNumber(userRequestDTO.getCardStatus());
+        userCard.setCardStatus(userRequestDTO.getCardStatus());
+        userCard.setPwd2digit(userRequestDTO.getCardStatus());
         return userCard;
     }
-    public UserCard modifyCardStatusUserCard(PaymentRequestDTO paymentRequestDTO) {
-        return paymentRepository.modifyCardStatusByCardId(paymentRequestDTO.getCardStatus(), paymentRequestDTO.getCardId())
-                .orElseThrow(() -> new EntityNotFoundException("userCard not found with id: " + paymentRequestDTO.getCardId()));
+    // 카드 정보 수정(2)
+    public UserCard modifyCardStatusUserCard(UserRequestDTO userRequestDTO) {
+        return userCardRepository.modifyCardStatusByCardId(userRequestDTO.getCardStatus(), userRequestDTO.getCardId())
+                .orElseThrow(() -> new EntityNotFoundException("userCard not found with id: " + userRequestDTO.getCardId()));
     }
 
-    public Page<CardOrder> selectOrderHistory(PaymentRequestDTO paymentRequestDTO, int page) {
-        return paymentRepository.selectOrderHistory(paymentRequestDTO.getUserId(), PageRequest.of(page, 10)
+    // 카드 정보 조회(활성화만)
+    public Page<CardOrder> selectOrderHistory(UserRequestDTO userRequestDTO, int page) {
+        return cardOrderRepository.selectOrderHistory(userRequestDTO.getUserId(), PageRequest.of(page, 10)
                 , PageRequest.of(0, 10, Sort.by("createdAt").ascending()));
     }
 }

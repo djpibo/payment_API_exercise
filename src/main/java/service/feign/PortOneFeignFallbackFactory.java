@@ -2,8 +2,8 @@ package service.feign;
 
 import dto.AccessTokenRequestDTO;
 import dto.AccessTokenResponseDTO;
-import dto.SubscribeRequestDTO;
-import dto.SubscribeResponseDTO;
+import dto.PortonePayRequestDTO;
+import dto.PortonePayResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class PortOneFeignFallbackFactory implements FallbackFactory<PortoneClien
                 return null;
             }
             @Override
-            public SubscribeResponseDTO postSubscribePaymentOnetime(String token, SubscribeRequestDTO subscribeDTO) {
+            public PortonePayResponseDTO postSubscribePaymentOnetime(String token, PortonePayRequestDTO subscribeDTO) {
                 return null;
             }
             @Override
