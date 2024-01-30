@@ -1,15 +1,14 @@
 package entity;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Entity
@@ -20,7 +19,9 @@ public class CardOrder {
     private Long id;
 
     @Column(nullable = false)
-    private String customerUid; // 회원정보와 FK
+    private String impUid;
+    @Column(nullable = false)
+    private String customerUid;
     @Column(nullable = false)
     private String merchantUid;
     @Column(nullable = false)
@@ -30,6 +31,7 @@ public class CardOrder {
     private String pg;
     private String name;
     private String customData;
+    private String currency;
     private String browserIp;
     private String noticeUrl;
     private String secure3dChargeId;

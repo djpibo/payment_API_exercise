@@ -1,11 +1,7 @@
 package service;
 
 import dto.*;
-import entity.CardOrder;
-import entity.Member;
-import entity.UserCard;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
+import entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -15,9 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import repository.CardOrderRepository;
 import repository.MemberRepository;
+import repository.SubscriptionRepository;
 import repository.UserCardRepository;
 import service.feign.PortoneClient;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,6 +31,7 @@ public class PaymentService {
     private final MemberRepository memberRepository;
     private final UserCardRepository userCardRepository;
     private final RedisService redisService;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Value("${portone.imp.key}")
     private String impKey;
@@ -81,15 +84,15 @@ public class PaymentService {
 
     // 회원 보유 카드 정보 조회
     public List<UserCard> selectUserCardList(UserRequestDTO userRequestDTO) {
-        return userCardRepository.findUserCardById(userRequestDTO.getUserId());
+        return userCardRepository.findUserCardListById(userRequestDTO.getUserId());
     }
 
     // 카드 정보 수정(1)
     public UserCard modifyUserCard(UserRequestDTO userRequestDTO) {
         UserCard userCard = entityManager.find(UserCard.class, userRequestDTO.getCardId());
-        userCard.setCardNumber(userRequestDTO.getCardStatus());
+        userCard.setPhoneNumber(userRequestDTO.getPhoneNumber());
         userCard.setCardStatus(userRequestDTO.getCardStatus());
-        userCard.setPwd2digit(userRequestDTO.getCardStatus());
+        userCard.setPwd2digit(userRequestDTO.getPwd2digit());
         entityManager.persist(userCard);
         return userCard;
     }
@@ -103,5 +106,45 @@ public class PaymentService {
     public Page<CardOrder> selectOrderHistory(UserRequestDTO userRequestDTO, int page) {
         return cardOrderRepository.selectOrderHistory(userRequestDTO.getUserId(), PageRequest.of(page, 10)
                 , PageRequest.of(0, 10, Sort.by("createdAt").ascending()));
+    }
+
+    public RefundResponseDTO refundOrder(RefundRequestDTO refundRequestDTO) {
+        CardOrder cardOrder = cardOrderRepository.findCardOrderByImpUid(refundRequestDTO.getImpUid());
+        if(cardOrder == null){
+            return RefundResponseDTO.builder()
+                    .code(HttpStatus.NOT_EXTENDED.value())
+                    .message("No such ImpUid")
+                    .response(null)
+                    .build();
+        } else{
+            cardOrderRepository.cancelOrderByimpUid(refundRequestDTO.getImpUid());
+            return RefundResponseDTO.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("Refund Completed")
+                    .response(RefundResponseDTO.PaymentAnnotation.builder()
+                            .impUid(cardOrder.getImpUid())
+                            .merchantUid(cardOrder.getMerchantUid())
+                            .amount(cardOrder.getAmount())
+                            .cancelAmount(refundRequestDTO.getAmount())
+                            .currency(cardOrder.getCurrency())
+                            .status("cancelled")
+                            .build())
+                    .build();
+        }
+    }
+
+    public Subscription enrollSubscribe(UserSubscribeDTO userSubscribeDTO) {
+        return subscriptionRepository.insertByCardId(userSubscribeDTO);
+    }
+
+    public Subscription modifySubscribe(UserSubscribeDTO userSubscribeDTO) {
+        Subscription subscription = subscriptionRepository.findSubscriptionByCardId(userSubscribeDTO.getCardId());
+        LocalDate paidDate = userSubscribeDTO.getPaidDate() == null ? subscription.getPaidDate() : userSubscribeDTO.getPaidDate();
+        BigDecimal payAmount = userSubscribeDTO.getPayAmount() == null ? subscription.getPayAmount() : userSubscribeDTO.getPayAmount();
+        Status status = Status.Inactive;
+        LocalDateTime appliedEndDate = LocalDateTime.now();
+        int payCount = userSubscribeDTO.getPayCount() == 0 ? subscription.getPayCount() : userSubscribeDTO.getPayCount();
+
+        return subscriptionRepository.modifyByCardId(paidDate, status, appliedEndDate, payCount, payAmount, subscription.getId());
     }
 }

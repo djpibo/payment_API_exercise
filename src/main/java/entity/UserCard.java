@@ -1,6 +1,6 @@
 package entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,18 +18,19 @@ public class UserCard {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "order_id")
     private CardOrder cardOrder;
 
-    @Column(name = "card_number", nullable = false)
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
     private String cardNumber;
     @Column(nullable = false)
     private String expiry;
     private String pwd2digit;
     private String cvc;
     @Enumerated(EnumType.STRING)
-    private String cardStatus;
+    private Status cardStatus;
 
     @CreatedDate
     private LocalDateTime createdDate;

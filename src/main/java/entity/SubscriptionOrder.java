@@ -1,35 +1,32 @@
 package entity;
 
+import javax.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-public class Member {
+@Builder
+@AllArgsConstructor
+public class SubscriptionOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "card_id")
-    private UserCard userCard;
-
     @Column(nullable = false)
-    private String buyerTel;
-    @Column(nullable = false)
-    private String birth;
-    private String buyerName;
-    private String buyerEmail;
-    private String buyerAddr;
-    private String buyerPostcode;
-
+    private Long subscriptionOrderNum;
+    private LocalDateTime lastPaidDate;
+    private boolean paidSuccessYn;
+    private String errorCd;
+    private String errorName;
     @CreatedDate
     private LocalDateTime createdDate;
     @LastModifiedDate
@@ -38,5 +35,8 @@ public class Member {
     private String createdBy;
     @LastModifiedBy
     private String lastModifiedBy;
+
+    public SubscriptionOrder() {
+    }
 }
 

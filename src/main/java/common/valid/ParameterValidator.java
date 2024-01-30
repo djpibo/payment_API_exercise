@@ -1,8 +1,9 @@
 package common.valid;
 
 import common.annotation.ValidationAnnotation;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 public class ParameterValidator implements ConstraintValidator<ValidationAnnotation, String> {
   @Override

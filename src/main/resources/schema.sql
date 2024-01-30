@@ -19,7 +19,6 @@ DROP TABLE IF EXISTS USER_CARD;
 CREATE TABLE USER_CARD COMMENT '회원보유카드정보'
 (
     id                INTEGER NOT NULL,
-    user_id           INTEGER NOT NULL,
     card_number       VARCHAR(50) NOT NULL,
     expiry            VARCHAR(8) NOT NULL,
     pwd_2digit        VARCHAR(8) NOT NULL,
@@ -36,8 +35,6 @@ DROP TABLE IF EXISTS CARD_ORDER;
 CREATE TABLE CARD_ORDER COMMENT '주문정보'
 (
     id                       INTEGER NOT NULL,
-    card_id                  INTEGER NOT NULL,
-    user_id                  INTEGER NOT NULL,
     merchant_uid             VARCHAR(50) NOT NULL,
     amount                   DECIMAL NOT NULL,
     tax_free                 DECIMAL NOT NULL,

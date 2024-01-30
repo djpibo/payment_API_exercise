@@ -1,16 +1,17 @@
 package controller;
 
-import common.exception.NoSuchElementFoundException;
-import dto.UserRequestDTO;
 import dto.PortonePayResponseDTO;
+import dto.RefundRequestDTO;
+import dto.UserRequestDTO;
+import dto.UserSubscribeDTO;
 import entity.CardOrder;
+import entity.Subscription;
 import entity.UserCard;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import service.PaymentService;
 
@@ -49,17 +50,27 @@ public class PaymentController {
     return ResponseEntity.status(HttpStatus.OK).body(paymentService.selectOrderHistory(userRequestDTO, page));
   }
 
-  @PostMapping("/user/subscribe")
-  public ResponseEntity<?> postSubscribe(@RequestBody UserRequestDTO userRequestDTO, @RequestParam(defaultValue = "0") int page) {
-    return ResponseEntity.status(HttpStatus.OK).body(paymentService.selectOrderHistory(userRequestDTO, page));
+  @PostMapping("/subscribe/enroll")
+  public ResponseEntity<Subscription> enrollSubscribe(@RequestBody UserSubscribeDTO userSubscribeDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.enrollSubscribe(userSubscribeDTO));
+  }
+  @PostMapping("/subscribe/modify")
+  public ResponseEntity<Subscription> modifySubscribe(@RequestBody UserSubscribeDTO userSubscribeDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.modifySubscribe(userSubscribeDTO));
   }
 
+  @PostMapping("/user/refund")
+  public ResponseEntity<?> refundOrder(@RequestBody RefundRequestDTO refundRequestDTO) {
+    return ResponseEntity.status(HttpStatus.OK).body(paymentService.refundOrder(refundRequestDTO));
+  }
+
+  /*
   @ExceptionHandler(NoSuchElementFoundException.class)
   public ResponseEntity<ErrorResponse> handleNoSuchElementFoundException(NoSuchElementFoundException exception) {
     ErrorResponse errorResponse = ErrorResponse.builder(exception, HttpStatus.NOT_FOUND, "The requested resource could not be found.").build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
-
+*/
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleAllUncaughtException(Exception exception) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
