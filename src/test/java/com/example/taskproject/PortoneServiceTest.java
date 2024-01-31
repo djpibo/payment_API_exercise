@@ -2,9 +2,8 @@ package com.example.taskproject;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import service.PaymentService;
+import com.example.taskproject.service.PaymentService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

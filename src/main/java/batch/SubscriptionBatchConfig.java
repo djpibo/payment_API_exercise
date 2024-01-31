@@ -1,9 +1,12 @@
 package batch;
 
-import config.CreateJobParameter;
-import dto.AccessTokenResponseDTO;
-import dto.PortonePayRequestDTO;
-import dto.PortonePayResponseDTO;
+import com.example.taskproject.config.CreateJobParameter;
+import com.example.taskproject.dto.AccessTokenResponseDTO;
+import com.example.taskproject.dto.PortonePayRequestDTO;
+import com.example.taskproject.dto.PortonePayResponseDTO;
+import com.example.taskproject.entity.Subscription;
+import com.example.taskproject.entity.SubscriptionOrder;
+import com.example.taskproject.entity.UserCard;
 import entity.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +24,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import repository.MemberRepository;
-import repository.SubscriptionOrderRepository;
-import repository.SubscriptionRepository;
-import repository.UserCardRepository;
-import service.PaymentService;
-import service.RedisService;
-import service.feign.PortoneClient;
+import com.example.taskproject.repository.MemberRepository;
+import com.example.taskproject.repository.SubscriptionOrderRepository;
+import com.example.taskproject.repository.SubscriptionRepository;
+import com.example.taskproject.repository.UserCardRepository;
+import com.example.taskproject.service.PaymentService;
+import com.example.taskproject.service.RedisService;
+import com.example.taskproject.service.feign.PortoneClient;
 
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
